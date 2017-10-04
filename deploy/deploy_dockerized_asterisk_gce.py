@@ -3,7 +3,20 @@ from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 from pprint import pprint
 
+from slackclient import SlackClient
+
 from GCECreds import GCECreds
+
+slack_token = ""
+sc = SlackClient(slack_token)
+
+
+def send_slack(message):
+    sc.api_call(
+        "chat.postMessage",
+        channel="#asterisk-deploys",
+        text=message
+    )
 
 def gce_driver_by_region(region):
     ComputeEngine = get_driver(Provider.GCE)
@@ -33,15 +46,20 @@ def deploy_node(driver, deployment_name):
 deployment_name = "astricon-dkr-{}".format(datetime.datetime.now().strftime('%Y-%m-%dt%H%M%S'))
 print("Starting Asterisk deployment: {}".format(deployment_name))
 
-REGIONS_TO_DEPLOY_MACHINES_AT = ['us-central1-a']
+# REGIONS_TO_DEPLOY_MACHINES_AT = ['us-central1-a']
+REGIONS_TO_DEPLOY_MACHINES_AT = ['us-central1-a', 'us-east1-b']
 
 for region in REGIONS_TO_DEPLOY_MACHINES_AT:
+    node_name = "{}-{}".format(deployment_name, region)
+
     print("Deploying {} in region {}".format(deployment_name, region))
-    driver = gce_driver_by_region('us-central1-a')
-    node = deploy_node(driver, deployment_name)
+    driver = gce_driver_by_region(region)
+    node = deploy_node(driver, node_name)
+
     print("Waiting for Node")
     driver.wait_until_running([node], 10, 1000)
     print("Node is now running")
     print("")
-    print("Your new machine is running: {}".format(deployment_name))
+    send_slack("Woo! A new node was deployed! :tada: \n The node *{}* is available on \n public IP: *{}*".format(node_name, node.public_ips[0]))
+    print("Your new machine is running: {}".format(node_name))
     print("Visit: https://console.cloud.google.com/compute/instances?project=astricon-2017-demos")
