@@ -7,7 +7,7 @@ from slackclient import SlackClient
 
 from GCECreds import GCECreds
 
-slack_token = ""
+slack_token = GCECreds.SLACK_TOKEN
 sc = SlackClient(slack_token)
 
 
@@ -47,8 +47,8 @@ deployment_name = "astricon-dkr-{}".format(datetime.datetime.now().strftime('%Y-
 print("Starting Asterisk deployment: {}".format(deployment_name))
 
 # REGIONS_TO_DEPLOY_MACHINES_AT = ['us-central1-a']
-REGIONS_TO_DEPLOY_MACHINES_AT = ['us-central1-a', 'us-east1-b']
-
+# REGIONS_TO_DEPLOY_MACHINES_AT = ['asia-southeast1-a']
+REGIONS_TO_DEPLOY_MACHINES_AT = ['us-central1-a', 'us-east1-b', 'asia-southeast1-a']
 for region in REGIONS_TO_DEPLOY_MACHINES_AT:
     node_name = "{}-{}".format(deployment_name, region)
 

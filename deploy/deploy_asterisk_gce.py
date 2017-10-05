@@ -5,7 +5,8 @@ from pprint import pprint
 
 from GCECreds import GCECreds
 
-deployment_name = "astricon-{}".format(datetime.datetime.now().strftime('%Y-%m-%dt%H%M%S'))
+deployment_name = "astricon-{}"\
+    .format(datetime.datetime.now().strftime('%Y-%m-%dt%H%M%S'))
 print("Starting Asterisk deployment: {}".format(deployment_name))
 
 ComputeEngine = get_driver(Provider.GCE)
